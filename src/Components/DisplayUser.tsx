@@ -9,13 +9,15 @@ const DisplayUser: Component = () => {
   //  options?: { name?: string, equals?: false | ((prev: T, next: T) => boolean) }
   const [updatedata, setUpdateData] = createSignal([]);
   //update
+
   const [name, setName] = createSignal("");
   const [email, setEmail] = createSignal("");
   const [phone, setPhone] = createSignal("");
   const [role, setRole] = createSignal("");
   const [data, setData] = createSignal([]);
+  const [flag, setFlag] = createSignal(0);
 
-  createEffect(async (prev) => {
+  createEffect(() => {
     axios
       .get("http://localhost:9001/solid-js")
       .then((res) => {
@@ -25,6 +27,7 @@ const DisplayUser: Component = () => {
       .catch((err) => {
         console.log(err);
       });
+    flag();
   });
 
   const handleEdit = async (i: Event): void => {
@@ -33,6 +36,7 @@ const DisplayUser: Component = () => {
       .get(`http://localhost:9001/solid-js/edit/${i}`)
       .then((res) => {
         setUpdateData(res.data);
+
         console.log(updatedata());
         // alert("Record Deleted Sucesfully.");
       })
@@ -46,8 +50,8 @@ const DisplayUser: Component = () => {
     const dataToSubmit = {
       name: name() || updatedata().name,
       email: email() || updatedata().email,
-      phone: phone() || updatedata().name,
-      role: role() || updatedata().name,
+      phone: phone() || updatedata().phone,
+      role: role() || updatedata().role,
     };
     console.log(`submitting`, dataToSubmit);
     console.log("updated id=", updatedata()._id);
@@ -58,8 +62,10 @@ const DisplayUser: Component = () => {
         dataToSubmit
       )
       .then((res) => {
-        //console.log(res.data);
-        alert(`Record of ${updatedata().name} is updated sucessfull.`);
+        console.log(res.data);
+        setFlag(flag() + 1);
+        console.log("update", flag());
+        alert(`Record of ${updatedata().name} is updated`);
       })
       .catch((err) => {
         console.log(err);
@@ -72,6 +78,8 @@ const DisplayUser: Component = () => {
       .delete(`http://localhost:9001/solid-js/delete/${i}`)
       .then((res) => {
         // console.log(res.data);
+        setFlag(flag() + 1);
+        console.log("delete", flag());
         alert("Record Deleted Sucesfully.");
       })
       .catch((err) => {
@@ -87,6 +95,7 @@ const DisplayUser: Component = () => {
         <table class="table table-striped">
           <thead>
             <tr>
+              <th scope="col">ID</th>
               <th scope="col">Name</th>
               <th scope="col">Email</th>
               <th scope="col">Phone</th>
@@ -96,8 +105,9 @@ const DisplayUser: Component = () => {
           </thead>
           <tbody>
             <For each={data()} fallback={<div>Loading...</div>}>
-              {(user) => (
+              {(user, i) => (
                 <tr>
+                  <td>{i() + 1}</td>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>{user.phone}</td>
@@ -124,7 +134,10 @@ const DisplayUser: Component = () => {
                         />
                       </svg>
                     </button>{" "}
-                    <button type="button" onClick={handleDelete}>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(user._id)}
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
@@ -244,6 +257,7 @@ const DisplayUser: Component = () => {
                   type="submit"
                   class="btn btn-primary"
                   onClick={handleUpdate}
+                  data-bs-dismiss="modal"
                 >
                   Save changes
                 </button>

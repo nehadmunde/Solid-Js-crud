@@ -45,7 +45,7 @@ class userController {
         {
           $set: {
             name: req.body.name,
-            email: req.body.name,
+            email: req.body.email,
             phone: req.body.phone,
             role: req.body.role,
           },

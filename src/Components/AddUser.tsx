@@ -1,6 +1,7 @@
 import { Component, createSignal } from "solid-js";
 import { For } from "solid-js";
 import axios from "axios";
+
 const AddUser: Component = () => {
   const [name, setName] = createSignal("");
   const [email, setEmail] = createSignal("");
@@ -20,6 +21,10 @@ const AddUser: Component = () => {
       .post("http://localhost:9001/solid-js", dataToSubmit)
       .then((res) => {
         alert("Record Saved");
+        setName("");
+        setEmail("");
+        setPhone("");
+        setRole("");
         // console.log("post", res.data);
       })
       .catch((err) => {
@@ -42,6 +47,7 @@ const AddUser: Component = () => {
               placeholder="Abc"
               id="name"
               name="name"
+              value={name()}
               onChange={(e) => setName(e.currentTarget.value)}
             />
           </div>
@@ -55,6 +61,7 @@ const AddUser: Component = () => {
               id="email"
               placeholder="exaple@gmail.com"
               name="email"
+              value={email()}
               onChange={(e) => setEmail(e.currentTarget.value)}
             />
           </div>
@@ -68,6 +75,7 @@ const AddUser: Component = () => {
               id="email"
               name="phone"
               pattern="[0-9]{10}"
+              value={phone()}
               placeholder="9503816224"
               onChange={(e) => setPhone(e.currentTarget.value)}
             />
@@ -79,6 +87,7 @@ const AddUser: Component = () => {
             <select
               name="role"
               class="form-select"
+              value={role()}
               onChange={(e) => setRole(e.currentTarget.value)}
               aria-label="Default select example"
             >
